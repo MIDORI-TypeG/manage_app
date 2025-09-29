@@ -1,0 +1,80 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* カスタムスタイル */
+.calendar-container .react-calendar {
+  @apply w-full border border-gray-300 rounded-lg shadow-sm bg-white;
+}
+
+.calendar-container .react-calendar__navigation {
+  @apply p-4 border-b border-gray-200;
+}
+
+.calendar-container .react-calendar__navigation button {
+  @apply px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-md transition-colors;
+}
+
+.calendar-container .react-calendar__tile {
+  @apply p-3 text-sm hover:bg-blue-50 transition-colors relative;
+}
+
+.calendar-container .react-calendar__tile--active {
+  @apply bg-blue-500 text-white;
+}
+
+.calendar-container .react-calendar__tile--hasShift {
+  @apply bg-green-100 border-l-4 border-green-500;
+}
+
+.calendar-container .react-calendar__tile--hasShift.react-calendar__tile--active {
+  @apply bg-blue-500 text-white border-l-4 border-white;
+}
+
+/* アニメーション */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.slide-in {
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.2s ease-out;
+}
+
+/* カスタムスクロールバー */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #a1a1a1;
+}

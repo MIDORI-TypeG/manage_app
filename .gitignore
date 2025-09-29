@@ -1,0 +1,35 @@
+# Logs
+*.log
+pm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Dependency directories
+node_modules/
+
+# Build artifacts
+build/
+dist/
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Local storage
+*.sqlite
+
+# IDEs and other
+.vscode/
+.idea/
+.DS_Store
+
+# Frontend specific
+frontend/build/
+frontend/node_modules/
+
+# Backend specific
+backend/node_modules/
+backend/database.sqlite
