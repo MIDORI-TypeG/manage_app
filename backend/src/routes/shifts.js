@@ -6,7 +6,7 @@ const router = express.Router();
 // 全シフト取得（日付範囲指定可能）
 router.get('/', (req, res) => {
   const { start_date, end_date } = req.query;
-  let query = 'SELECT * FROM shifts';
+  let query = 'SELECT id, name, date, start_time, end_time, memo, understaffed_flag, created_at, updated_at FROM shifts';
   let params = [];
 
   if (start_date && end_date) {
@@ -29,7 +29,7 @@ router.get('/', (req, res) => {
 router.get('/date/:date', (req, res) => {
   const { date } = req.params;
   
-  db.all('SELECT * FROM shifts WHERE date = ? ORDER BY start_time', [date], (err, rows) => {
+  db.all('SELECT id, name, date, start_time, end_time, memo, understaffed_flag, created_at, updated_at FROM shifts WHERE date = ? ORDER BY start_time', [date], (err, rows) => {
     if (err) {
       res.status(500).json({ error: err.message });
       return;
@@ -40,30 +40,61 @@ router.get('/date/:date', (req, res) => {
 
 // シフト作成
 router.post('/', (req, res) => {
-  const { employee_name, date, start_time, end_time, position, notes } = req.body;
+  const { name, date, start_time, end_time, memo, understaffed_flag = false } = req.body;
   
-  if (!employee_name || !date || !start_time || !end_time) {
+  if (!name || !date || !start_time || !end_time) {
     return res.status(400).json({ error: '必須項目が不足しています' });
   }
 
   const query = `
-    INSERT INTO shifts (employee_name, date, start_time, end_time, position, notes, updated_at)
+    INSERT INTO shifts (name, date, start_time, end_time, memo, understaffed_flag, updated_at)
     VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
   `;
   
-  db.run(query, [employee_name, date, start_time, end_time, position, notes], function(err) {
+  db.run(query, [name, date, start_time, end_time, memo, understaffed_flag], function(err) {
     if (err) {
       res.status(500).json({ error: err.message });
       return;
     }
     res.json({
       id: this.lastID,
-      employee_name,
+      name,
       date,
       start_time,
       end_time,
-      position,
-      notes
+      memo,
+      understaffed_flag
+    });
+  });
+});
+
+// AI入力によるシフト作成 (Placeholder)
+router.post('/ai-input', (req, res) => {
+  const { name, date, start_time, end_time, memo, understaffed_flag = false } = req.body;
+
+  if (!name || !date || !start_time || !end_time) {
+    return res.status(400).json({ error: '必須項目が不足しています' });
+  }
+
+  const query = `
+    INSERT INTO shifts (name, date, start_time, end_time, memo, understaffed_flag, updated_at)
+    VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+  `;
+  
+  db.run(query, [name, date, start_time, end_time, memo, understaffed_flag], function(err) {
+    if (err) {
+      res.status(500).json({ error: err.message });
+      return;
+    }
+    res.json({
+      id: this.lastID,
+      name,
+      date,
+      start_time,
+      end_time,
+      memo,
+      understaffed_flag,
+      message: 'AI入力によるシフトが作成されました (AI解析は別途実装が必要です)'
     });
   });
 });
@@ -71,15 +102,15 @@ router.post('/', (req, res) => {
 // シフト更新
 router.put('/:id', (req, res) => {
   const { id } = req.params;
-  const { employee_name, date, start_time, end_time, position, notes } = req.body;
+  const { name, date, start_time, end_time, memo, understaffed_flag } = req.body;
   
   const query = `
     UPDATE shifts 
-    SET employee_name = ?, date = ?, start_time = ?, end_time = ?, position = ?, notes = ?, updated_at = CURRENT_TIMESTAMP
+    SET name = ?, date = ?, start_time = ?, end_time = ?, memo = ?, understaffed_flag = ?, updated_at = CURRENT_TIMESTAMP
     WHERE id = ?
   `;
   
-  db.run(query, [employee_name, date, start_time, end_time, position, notes, id], function(err) {
+  db.run(query, [name, date, start_time, end_time, memo, understaffed_flag, id], function(err) {
     if (err) {
       res.status(500).json({ error: err.message });
       return;
@@ -106,6 +137,34 @@ router.delete('/:id', (req, res) => {
       return;
     }
     res.json({ message: 'シフトが削除されました' });
+  });
+});
+
+// シフトの人員不足フラグを切り替え
+router.put('/:id/flag', (req, res) => {
+  const { id } = req.params;
+  const { understaffed_flag } = req.body;
+
+  if (typeof understaffed_flag === 'undefined') {
+    return res.status(400).json({ error: 'understaffed_flag が指定されていません' });
+  }
+
+  const query = `
+    UPDATE shifts 
+    SET understaffed_flag = ?, updated_at = CURRENT_TIMESTAMP
+    WHERE id = ?
+  `;
+  
+  db.run(query, [understaffed_flag, id], function(err) {
+    if (err) {
+      res.status(500).json({ error: err.message });
+      return;
+    }
+    if (this.changes === 0) {
+      res.status(404).json({ error: 'シフトが見つかりません' });
+      return;
+    }
+    res.json({ message: 'シフトの人員不足フラグが更新されました' });
   });
 });
 

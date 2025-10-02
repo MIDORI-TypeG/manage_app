@@ -4,7 +4,6 @@ import dotenv from 'dotenv';
 import shiftRoutes from './routes/shifts.js';
 import inventoryRoutes from './routes/inventory.js';
 import noticeRoutes from './routes/notices.js';
-import flagsRoutes from './routes/flags.js';
 
 dotenv.config();
 
@@ -22,7 +21,6 @@ app.use(express.json());
 app.use('/api/shifts', shiftRoutes);
 app.use('/api/inventory', inventoryRoutes);
 app.use('/api/notices', noticeRoutes);
-app.use('/api/flags', flagsRoutes);
 
 // ヘルスチェック
 app.get('/api/health', (req, res) => {

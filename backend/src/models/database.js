@@ -23,12 +23,12 @@ export const initDatabase = () => {
     db.run(`
       CREATE TABLE IF NOT EXISTS shifts (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        employee_name TEXT NOT NULL,
+        name TEXT NOT NULL,
         date TEXT NOT NULL,
         start_time TEXT NOT NULL,
         end_time TEXT NOT NULL,
-        position TEXT,
-        notes TEXT,
+        memo TEXT,
+        understaffed_flag BOOLEAN DEFAULT FALSE,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
       )
@@ -40,30 +40,12 @@ export const initDatabase = () => {
     db.run(`
       CREATE TABLE IF NOT EXISTS inventory (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        item_name TEXT NOT NULL,
-        current_stock INTEGER NOT NULL DEFAULT 0,
-        minimum_stock INTEGER NOT NULL DEFAULT 0,
-        unit TEXT NOT NULL DEFAULT '個',
-        category TEXT,
-        notes TEXT,
-        status TEXT NOT NULL DEFAULT '在庫有',
+        name TEXT NOT NULL,
+        category TEXT NOT NULL,
+        info_memo TEXT,
+        status TEXT,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
-      )
-    `, (err) => {
-      if (err) reject(err);
-    });
-
-    // 在庫履歴テーブル
-    db.run(`
-      CREATE TABLE IF NOT EXISTS inventory_history (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        item_id INTEGER NOT NULL,
-        change_type TEXT NOT NULL, -- 'in' or 'out'
-        quantity INTEGER NOT NULL,
-        reason TEXT,
-        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (item_id) REFERENCES inventory (id)
       )
     `, (err) => {
       if (err) reject(err);
@@ -75,9 +57,7 @@ export const initDatabase = () => {
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         title TEXT NOT NULL,
         content TEXT NOT NULL,
-        priority TEXT NOT NULL DEFAULT 'normal', -- 'high', 'normal', 'low'
-        is_read BOOLEAN DEFAULT FALSE,
-        author TEXT,
+        read_status BOOLEAN DEFAULT FALSE,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
       )
@@ -85,20 +65,7 @@ export const initDatabase = () => {
       if (err) reject(err);
     });
 
-    // 日次フラグテーブル
-    db.run(`
-      CREATE TABLE IF NOT EXISTS daily_flags (
-        date TEXT PRIMARY KEY,
-        is_flagged BOOLEAN NOT NULL DEFAULT false
-      )
-    `, (err) => {
-      if (err) {
-        reject(err);
-      } else {
-        console.log('データベーステーブルが初期化されました');
-        resolve();
-      }
-    });
+
   });
 };
 

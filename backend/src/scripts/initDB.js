@@ -9,52 +9,58 @@ const initDB = async () => {
     const sampleData = {
       shifts: [
         {
-          employee_name: '田中太郎',
+          name: '田中太郎',
           date: '2024-01-15',
           start_time: '09:00',
           end_time: '17:00',
-          position: 'フロア',
-          notes: '新人研修中'
+          memo: '新人研修中',
+          understaffed_flag: false
         },
         {
-          employee_name: '佐藤花子',
+          name: '佐藤花子',
           date: '2024-01-15',
           start_time: '13:00',
           end_time: '21:00',
-          position: 'レジ',
-          notes: ''
+          memo: '',
+          understaffed_flag: false
         }
       ],
       inventory: [
         {
-          item_name: 'コピー用紙',
-          current_stock: 50,
-          minimum_stock: 10,
-          unit: '束',
-          category: '事務用品',
-          notes: 'A4サイズ'
+          name: 'ショートケーキ',
+          category: 'スイーツ',
+          info_memo: '季節限定',
+          status: null
         },
         {
-          item_name: 'ボールペン',
-          current_stock: 5,
-          minimum_stock: 20,
-          unit: '本',
-          category: '事務用品',
-          notes: '黒色のみ'
+          name: 'ブレンド豆',
+          category: '焙煎豆',
+          info_memo: '深煎り',
+          status: null
+        },
+        {
+          name: 'エスプレッソマシン',
+          category: '備品',
+          info_memo: '定期メンテナンス必要',
+          status: '在庫有'
+        },
+        {
+          name: 'コーヒーフィルター',
+          category: '備品',
+          info_memo: 'サイズ102',
+          status: '要発注'
         }
       ],
       notices: [
         {
           title: '新年度研修のお知らせ',
           content: '来月から新年度研修を開始します。詳細は後日連絡いたします。',
-          priority: 'high',
-          author: '管理者'
+          read_status: false
         },
         {
           title: 'システムメンテナンス',
           content: '今週末にシステムメンテナンスを実施します。',
-          priority: 'normal',
-          author: 'IT部'
+          read_status: false
         }
       ]
     };
@@ -62,24 +68,24 @@ const initDB = async () => {
     // サンプルシフトデータ挿入
     for (const shift of sampleData.shifts) {
       db.run(
-        'INSERT INTO shifts (employee_name, date, start_time, end_time, position, notes) VALUES (?, ?, ?, ?, ?, ?)',
-        [shift.employee_name, shift.date, shift.start_time, shift.end_time, shift.position, shift.notes]
+        'INSERT INTO shifts (name, date, start_time, end_time, memo, understaffed_flag) VALUES (?, ?, ?, ?, ?, ?)',
+        [shift.name, shift.date, shift.start_time, shift.end_time, shift.memo, shift.understaffed_flag]
       );
     }
 
     // サンプル在庫データ挿入
     for (const item of sampleData.inventory) {
       db.run(
-        'INSERT INTO inventory (item_name, current_stock, minimum_stock, unit, category, notes) VALUES (?, ?, ?, ?, ?, ?)',
-        [item.item_name, item.current_stock, item.minimum_stock, item.unit, item.category, item.notes]
+        'INSERT INTO inventory (name, category, info_memo, status) VALUES (?, ?, ?, ?)',
+        [item.name, item.category, item.info_memo, item.status]
       );
     }
 
     // サンプルお知らせデータ挿入
     for (const notice of sampleData.notices) {
       db.run(
-        'INSERT INTO notices (title, content, priority, author) VALUES (?, ?, ?, ?)',
-        [notice.title, notice.content, notice.priority, notice.author]
+        'INSERT INTO notices (title, content, read_status) VALUES (?, ?, ?)',
+        [notice.title, notice.content, notice.read_status]
       );
     }
 
